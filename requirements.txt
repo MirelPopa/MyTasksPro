@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+celery
+redis
+pydantic
+pydantic[email]
+python-jose
+passlib
+psycopg2-binary

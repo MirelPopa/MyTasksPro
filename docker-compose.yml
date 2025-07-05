@@ -1,0 +1,53 @@
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: admin_pass
+      POSTGRES_DB: mytasksproapp
+    volumes:
+      - C:/Users/Mirel/PycharmProjects/mytasksprodb:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin_user -d mytasksproapp" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+          condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+#    volumes:
+#      - .:/app
+    depends_on:
+      - redis
+      - postgres
+
+volumes:
+  postgres_data:
