@@ -2,10 +2,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
+from db.main import Base, get_db
+from api.main import fast_api_app
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 TEST_DATABASE_URL = os.getenv(
     "DATABASE_URL",
