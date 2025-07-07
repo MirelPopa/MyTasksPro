@@ -2,7 +2,8 @@ name: Run Tests
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
@@ -22,22 +23,29 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:                         # <--- Add your env var here (at the job level)
+      DATABASE_URL: postgresql://admin_user:admin_pass@localhost:5432/mytasksproapp
+
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install pytest pytest-asyncio httpx
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+      - name: Wait for Postgres to be ready
+        run: |
+          for i in {1..10}; do
+            pg_isready -h localhost -p 5432 && break
+            echo "Waiting for Postgres..."
+            sleep 2
+          done
 
-    - name: Run tests
-      run: |
-        pytest tests/
+      - name: Run tests
+        run: pytest
+        env:                   # <--- Also safe to add env var here if not at job level
+          DATABASE_URL: postgresql://admin_user:admin_pass@localhost:5432/mytasksproapp
