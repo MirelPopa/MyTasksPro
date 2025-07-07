@@ -1,11 +1,8 @@
 # tests/test_auth.py
 
-import pytest
-
-@pytest.mark.asyncio
-async def test_signup_and_login(client):
+def test_signup_and_login(client):
     # Signup
-    res = await client.post("/signup", json={
+    res = client.post("/signup", json={
         "email": "test@example.com",
         "password": "secret"
     })
@@ -13,7 +10,7 @@ async def test_signup_and_login(client):
     assert "access_token" in res.json()
 
     # Login
-    res = await client.post("/login", json={
+    res = client.post("/login", json={
         "email": "test@example.com",
         "password": "secret"
     })
