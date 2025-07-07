@@ -1,7 +1,7 @@
 # tests/conftest.py
 
 import pytest
-from fastapi.testclient import TestClient
+import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -38,7 +38,7 @@ def db_session():
     finally:
         db.close()
 
-@pytest.fixture()
+@pytest_asyncio.fixture
 async def client(db_session):
     def override_get_db():
         yield db_session
