@@ -44,7 +44,8 @@ jobs:
             echo "Waiting for Postgres..."
             sleep 2
           done
-
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Run tests
         run: pytest
         env:                   # <--- Also safe to add env var here if not at job level
