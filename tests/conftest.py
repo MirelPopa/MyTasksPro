@@ -3,13 +3,15 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from db.main import Base, get_db
-from api.main import fast_api_app
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-# This MUST match the DB service in .github/workflows/test.yml
-TEST_DATABASE_URL = "postgresql://admin_user:admin_pass@localhost:5432/mytasksproapp"
+TEST_DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://admin_user:admin_pass@localhost:5432/mytasksproapp"
+)
 
-# Set up engine for GitHub Actions test DB
 engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
