@@ -25,6 +25,16 @@ services:
       timeout: 5s
       retries: 5
 
+  flower:
+    image: mher/flower
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - worker
+
   api:
     build:
       context: .
@@ -43,8 +53,9 @@ services:
     build:
       context: .
       dockerfile: worker/Dockerfile
-#    volumes:
-#      - .:/app
+    volumes:
+      - .:/app
+      - ./exports:/app/exports
     depends_on:
       - redis
       - postgres

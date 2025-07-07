@@ -6,10 +6,6 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
-class UserOut(BaseModel):
-    id: int
-    email: EmailStr
-
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -21,3 +17,10 @@ class CreateTask(BaseModel):
     due_date: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.now)
     completed: Optional[bool] = False
+
+class TaskUpdate(BaseModel):
+    title: str
+    priority: int
+    description: Optional[str]
+    due_date: Optional[datetime]
+    completed: Optional[bool]
