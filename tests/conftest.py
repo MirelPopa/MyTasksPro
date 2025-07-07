@@ -1,12 +1,12 @@
-import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from db.main import Base
+from db.main import Base, get_db
 from api.main import fast_api_app
+import os
 
+# Use env var or fallback to localhost
 db_url = os.getenv("DATABASE_URL", "postgresql://admin_user:admin_pass@localhost:5432/mytasksproapp")
 engine = create_engine(db_url)
 TestingSessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
@@ -30,8 +30,7 @@ def client(db_session):
     def override_get_db():
         yield db_session
 
-    fast_api_app.dependency_overrides = {}  # Clear existing overrides
-    fast_api_app.dependency_overrides[getattr(__import__("db.main"), "get_db")] = override_get_db
+    fast_api_app.dependency_overrides[get_db] = override_get_db
 
     with TestClient(fast_api_app) as c:
         yield c
